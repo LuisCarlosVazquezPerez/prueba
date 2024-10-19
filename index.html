@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hello World</title>
+ 
+</head>
+<body>
+  <h1 class="text-3xl font-bold underline text-center my-4">Movie List</h1>
+  <div id="movie-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+    <!-- Movies will be displayed here -->
+  </div>
+  <div class="flex justify-center">
+    <button id="prev-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" disabled>Previous</button>
+    <button id="next-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Next</button>
+  </div>
+
+  <script>
+    const movieContainer = document.getElementById('movie-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    let currentPage = 1;
+
+    function fetchMovies(page) {
+      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1f568d2185657f7dca3a595bf59fffd6&page=${page}`)
+      .then(response => response.json())
+      .then(data => {
+          movieContainer.innerHTML = ''; // Clear previous movies
+        data.results.forEach(movie => {
+          const movieElement = document.createElement('div');
+          movieElement.className = 'bg-white rounded-lg shadow-md p-4';
+          movieElement.innerHTML = `<h2>${movie.title}</h2>
+                                      <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title} Poster" class="w-full">
+                                      <p>${movie.overview}</p>`;
+          movieContainer.appendChild(movieElement);
+        });
+          prevBtn.disabled = page === 1;
+          nextBtn.disabled = page === data.total_pages;
+        });
+    }
+
+    fetchMovies(currentPage); //
+
+    prevBtn.addEventListener('click', () => {
+      currentPage--;
+      fetchMovies(currentPage);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentPage++;
+      fetchMovies(currentPage);
+      });
+  </script>
+ 
+</body>
+</html>
